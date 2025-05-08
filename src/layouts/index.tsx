@@ -1,5 +1,5 @@
 import { Link, IRouteComponentProps, history } from 'umi';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Layout,
   Menu,
@@ -49,6 +49,7 @@ interface ExpandedSections {
 export default function AppLayout({ children }: IRouteComponentProps) {
   const currentYear = new Date().getFullYear();
   const currentPath = history.location.pathname;
+  const [darkMode, setDarkMode] = useState<boolean>(false);
 
   // Learning sections with collapsible state
   const [expandedSections, setExpandedSections] = useState<ExpandedSections>({
@@ -56,6 +57,20 @@ export default function AppLayout({ children }: IRouteComponentProps) {
     cloud: false,
     algorithms: false,
   });
+
+  // Load dark mode preference from localStorage
+  useEffect(() => {
+    const savedDarkMode = localStorage.getItem('darkMode');
+    if (savedDarkMode) {
+      setDarkMode(savedDarkMode === 'true');
+    }
+  }, []);
+
+  // Toggle dark mode
+  const toggleDarkMode = (checked: boolean) => {
+    setDarkMode(checked);
+    localStorage.setItem('darkMode', String(checked));
+  };
 
   const toggleSection = (section: string) => {
     setExpandedSections({
@@ -73,16 +88,18 @@ export default function AppLayout({ children }: IRouteComponentProps) {
   };
 
   return (
-    <Layout className={styles.appLayout}>
+    <Layout
+      className={`${styles.appLayout} ${darkMode ? styles.darkMode : ''}`}
+    >
       <Sider
         width={280}
-        theme="light"
+        theme={darkMode ? 'dark' : 'light'}
         className={styles.sidebar}
         breakpoint="lg"
         collapsedWidth="0"
       >
         {/* Core Identity Section */}
-        <div className={styles.identitySection}>
+        <div className={styles.identitySection} style={{ marginTop: '10px' }}>
           <Avatar size={80} icon={<HomeOutlined />} className={styles.avatar} />
           <Title level={4} className={styles.siteTitle}>
             QWang
@@ -102,44 +119,33 @@ export default function AppLayout({ children }: IRouteComponentProps) {
 
         {/* Quick Access Buttons */}
         <div className={styles.quickAccess}>
-          <Button
-            type="default"
-            icon={<BookOutlined />}
-            className={styles.quickButton}
-            block
-          >
-            <div className={styles.buttonContent}>
+          <Button type="default" className={styles.quickButton} block>
+            <div className={styles.buttonInner}>
+              <BookOutlined className={styles.buttonIcon} />
               <span>学习文档库</span>
-              <Progress percent={75} size="small" />
             </div>
           </Button>
 
-          <Button
-            type="default"
-            icon={<RocketOutlined />}
-            className={styles.quickButton}
-            block
-          >
-            <Badge.Ribbon text="New" color="red">
-              <div className={styles.buttonContent}>
+          <Badge.Ribbon text="New" color="red">
+            <Button type="default" className={styles.quickButton} block>
+              <div className={styles.buttonInner}>
+                <RocketOutlined className={styles.buttonIcon} />
                 <span>项目展示墙</span>
               </div>
-            </Badge.Ribbon>
-          </Button>
+            </Button>
+          </Badge.Ribbon>
 
-          <Button
-            type="default"
-            icon={<EditOutlined />}
-            className={styles.quickButton}
-            block
-          >
-            <div className={styles.buttonContent}>
+          <Button type="default" className={styles.quickButton} block>
+            <div className={styles.buttonInner}>
+              <EditOutlined className={styles.buttonIcon} />
               <span>即刻写作</span>
             </div>
           </Button>
         </div>
 
-        <Divider className={styles.divider}>技术栈分类</Divider>
+        <Divider orientation="left" plain style={{ margin: '12px 0 16px' }}>
+          技术栈分类
+        </Divider>
 
         {/* Learning Tree */}
         <Menu
@@ -148,6 +154,8 @@ export default function AppLayout({ children }: IRouteComponentProps) {
           defaultOpenKeys={['frontend']}
           selectedKeys={getSelectedKeys()}
           className={styles.treeNav}
+          style={{ borderRight: 'none' }}
+          theme={darkMode ? 'dark' : 'light'}
         >
           <SubMenu key="frontend" icon={<LaptopOutlined />} title="前端工程">
             <Menu.Item key="react-source">
@@ -183,7 +191,9 @@ export default function AppLayout({ children }: IRouteComponentProps) {
           </SubMenu>
         </Menu>
 
-        <Divider className={styles.divider}>项目矩阵</Divider>
+        <Divider orientation="left" plain style={{ margin: '12px 0 16px' }}>
+          项目矩阵
+        </Divider>
 
         {/* Project Tags */}
         <div className={styles.projectFilters}>
@@ -257,7 +267,10 @@ export default function AppLayout({ children }: IRouteComponentProps) {
             </div>
           </div>
 
-          <div className={styles.certBadges}>
+          <div
+            className={styles.certBadges}
+            style={{ marginTop: '10px', marginBottom: '10px' }}
+          >
             <Tag>AWS</Tag>
             <Tag>CKAD</Tag>
           </div>
@@ -288,26 +301,34 @@ export default function AppLayout({ children }: IRouteComponentProps) {
             </Tooltip>
           </Space>
 
-          <div className={styles.communitySection}>
-            <Space>
-              <Button
-                type="primary"
-                icon={<QuestionCircleOutlined />}
-                size="small"
-              >
-                向我提问
-              </Button>
-              <Button type="primary" icon={<TeamOutlined />} size="small">
-                技术交流群 <Badge count={128} size="small" />
-              </Button>
-            </Space>
+          <div
+            className={styles.communitySection}
+            style={{ marginTop: '10px' }}
+          >
+            <Button
+              type="primary"
+              icon={<QuestionCircleOutlined />}
+              size="small"
+              style={{ marginBottom: '8px' }}
+            >
+              向我提问
+            </Button>
+            <Button
+              type="primary"
+              icon={<TeamOutlined />}
+              size="small"
+              style={{ width: '100%' }}
+            >
+              技术交流群{' '}
+              <Badge count={128} size="small" style={{ marginLeft: '5px' }} />
+            </Button>
           </div>
         </Card>
 
-        <div className={styles.sidebarFooter}>
+        <div className={styles.sidebarFooter} style={{ marginTop: '20px' }}>
           <Space className={styles.themeToggle}>
             <Text type="secondary">暗黑模式</Text>
-            <Switch size="small" />
+            <Switch size="small" checked={darkMode} onChange={toggleDarkMode} />
           </Space>
           <Text type="secondary" className={styles.copyright}>
             © {currentYear} QWang's Tech Blog

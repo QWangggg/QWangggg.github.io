@@ -158,3 +158,35 @@
   text-align: center;
   color: #666;
 }
+
+/* Dark Mode Styles */
+:global(.darkMode) {
+  .homeContainer {
+    .pageTitle {
+      background: linear-gradient(90deg, #1da57a, #3f88c5);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .pageDescription {
+      color: #aaa;
+    }
+
+    .postCard {
+      background-color: #1f1f1f;
+      border-color: #333;
+
+      :global(.ant-card-body) {
+        background-color: #1f1f1f;
+      }
+
+      h4 {
+        color: #e0e0e0;
+      }
+    }
+
+    .postExcerpt {
+      color: #aaa;
+    }
+  }
+}
