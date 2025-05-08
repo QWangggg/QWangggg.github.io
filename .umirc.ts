@@ -17,6 +17,7 @@ export default defineConfig({
         { path: '/posts', component: '@/pages/posts/index' },
         { path: '/posts/:id', component: '@/pages/posts/post' },
         { path: '/about', component: '@/pages/about' },
+        { path: '/writing', component: '@/pages/writing/index' },
       ],
     },
   ],

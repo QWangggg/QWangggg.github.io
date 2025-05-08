@@ -135,7 +135,12 @@ export default function AppLayout({ children }: IRouteComponentProps) {
             </Button>
           </Badge.Ribbon>
 
-          <Button type="default" className={styles.quickButton} block>
+          <Button
+            type="default"
+            className={styles.quickButton}
+            onClick={() => history.push('/writing')}
+            block
+          >
             <div className={styles.buttonInner}>
               <EditOutlined className={styles.buttonIcon} />
               <span>即刻写作</span>
