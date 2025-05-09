@@ -19,7 +19,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '16'  # Choose the Node.js version that matches your development environment
-          cache: 'npm'
 
       - name: Install Dependencies
         run: npm install
