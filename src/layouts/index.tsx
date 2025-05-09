@@ -1,5 +1,5 @@
 import { Link, IRouteComponentProps, history } from 'umi';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Layout,
   Menu,
@@ -32,6 +32,8 @@ import {
   TeamOutlined,
   QuestionCircleOutlined,
   CaretRightOutlined,
+  MenuOutlined,
+  AppstoreOutlined,
 } from '@ant-design/icons';
 import styles from './index.less';
 
@@ -50,6 +52,9 @@ export default function AppLayout({ children }: IRouteComponentProps) {
   const currentYear = new Date().getFullYear();
   const currentPath = history.location.pathname;
   const [darkMode, setDarkMode] = useState<boolean>(false);
+  const [collapsed, setCollapsed] = useState<boolean>(false);
+  const [hovered, setHovered] = useState<boolean>(false);
+  const sidebarRef = useRef<HTMLDivElement>(null);
 
   // Learning sections with collapsible state
   const [expandedSections, setExpandedSections] = useState<ExpandedSections>({
@@ -57,6 +62,22 @@ export default function AppLayout({ children }: IRouteComponentProps) {
     cloud: false,
     algorithms: false,
   });
+
+  // Check for small screens on load
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth <= 768) {
+        setCollapsed(true);
+      }
+    };
+
+    handleResize(); // Initial check
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   // Load dark mode preference from localStorage
   useEffect(() => {
@@ -87,20 +108,48 @@ export default function AppLayout({ children }: IRouteComponentProps) {
     return [];
   };
 
+  const handleMouseEnter = () => {
+    if (collapsed) {
+      setHovered(true);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(false);
+  };
+
+  const sidebarClass = `${styles.sidebar} ${
+    collapsed ? styles.collapsedSidebar : ''
+  } ${hovered && collapsed ? styles.hoveredSidebar : ''}`;
+
   return (
     <Layout
-      className={`${styles.appLayout} ${darkMode ? styles.darkMode : ''}`}
+      className={`${styles.appLayout} ${darkMode ? styles.darkMode : ''} ${
+        collapsed ? styles.collapsedLayout : ''
+      }`}
     >
-      <Sider
-        width={280}
-        theme={darkMode ? 'dark' : 'light'}
-        className={styles.sidebar}
-        breakpoint="lg"
-        collapsedWidth="0"
+      <div
+        className={sidebarClass}
+        ref={sidebarRef}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
       >
+        {/* Toggle Button */}
+        <div className={styles.sidebarToggle}>
+          <Button
+            type="text"
+            icon={collapsed ? <MenuOutlined /> : <AppstoreOutlined />}
+            onClick={() => setCollapsed(!collapsed)}
+          />
+        </div>
+
         {/* Core Identity Section */}
-        <div className={styles.identitySection} style={{ marginTop: '10px' }}>
-          <Avatar size={80} icon={<HomeOutlined />} className={styles.avatar} />
+        <div className={styles.identitySection}>
+          <Avatar
+            size={collapsed && !hovered ? 40 : 80}
+            icon={<HomeOutlined />}
+            className={styles.avatar}
+          />
           <Title level={4} className={styles.siteTitle}>
             QWang
           </Title>
@@ -110,7 +159,7 @@ export default function AppLayout({ children }: IRouteComponentProps) {
 
           <div className={styles.skillTags}>
             <Tag color="blue">React</Tag>
-            <Tag color="green">Node.js</Tag>
+            <Tag color="green">Node</Tag>
             <Tag color="magenta">K8s</Tag>
             <Tag color="orange">AWS</Tag>
             <Tag color="purple">ML</Tag>
@@ -148,8 +197,9 @@ export default function AppLayout({ children }: IRouteComponentProps) {
           </Button>
         </div>
 
+        {/* Divider with conditional text */}
         <Divider orientation="left" plain style={{ margin: '12px 0 16px' }}>
-          技术栈分类
+          {(!collapsed || hovered) && '技术栈分类'}
         </Divider>
 
         {/* Learning Tree */}
@@ -161,6 +211,7 @@ export default function AppLayout({ children }: IRouteComponentProps) {
           className={styles.treeNav}
           style={{ borderRight: 'none' }}
           theme={darkMode ? 'dark' : 'light'}
+          inlineCollapsed={collapsed && !hovered}
         >
           <SubMenu key="frontend" icon={<LaptopOutlined />} title="前端工程">
             <Menu.Item key="react-source">
@@ -196,8 +247,9 @@ export default function AppLayout({ children }: IRouteComponentProps) {
           </SubMenu>
         </Menu>
 
+        {/* Divider with conditional text */}
         <Divider orientation="left" plain style={{ margin: '12px 0 16px' }}>
-          项目矩阵
+          {(!collapsed || hovered) && '项目矩阵'}
         </Divider>
 
         {/* Project Tags */}
@@ -339,7 +391,7 @@ export default function AppLayout({ children }: IRouteComponentProps) {
             © {currentYear} QWang's Tech Blog
           </Text>
         </div>
-      </Sider>
+      </div>
 
       <Layout className={styles.mainContent}>
         <Content className={styles.content}>{children}</Content>

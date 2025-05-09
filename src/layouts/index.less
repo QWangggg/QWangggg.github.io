@@ -19,6 +19,10 @@
   flex-direction: column;
   overflow-y: auto;
   scrollbar-width: thin;
+  z-index: 1000;
+  transition: all 0.3s ease;
+  padding: 10px 20px;
+  box-shadow: 1px 0 5px rgba(0, 0, 0, 0.05);
 
   &::-webkit-scrollbar {
     width: 6px;
@@ -30,17 +34,208 @@
   }
 
   @media (max-width: 768px) {
-    position: static;
-    width: 100%;
-    min-height: auto;
-    overflow-y: visible;
+    width: 64px;
   }
+}
+
+/* Collapsed Sidebar Styles */
+.collapsedSidebar {
+  width: 64px !important;
+  padding: 10px 5px;
+  overflow: hidden;
+
+  .identitySection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+    margin-bottom: 15px;
+  }
+
+  .avatar {
+    margin: 0 auto 5px;
+    width: 40px !important;
+    height: 40px !important;
+  }
+
+  /* Hide elements when collapsed */
+  .siteTitle,
+  .tagline,
+  .skillTags,
+  .quickAccess,
+  .projectFilters,
+  .searchSection,
+  .progressCard,
+  .devCard,
+  .sidebarFooter {
+    display: none;
+  }
+
+  /* Hide divider text in collapsed state */
+  :global(.ant-divider-inner-text) {
+    display: none !important;
+  }
+
+  /* Make dividers very thin or invisible in collapsed state */
+  :global(.ant-divider) {
+    margin: 8px 0 !important;
+    min-width: auto !important;
+    width: 80% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Menu styles in collapsed state */
+  :global(.ant-menu-inline-collapsed) {
+    width: 54px !important; /* Make sure menu fits in collapsed sidebar */
+
+    :global(.ant-menu-item),
+    :global(.ant-menu-submenu) {
+      padding: 0 !important;
+      text-align: center;
+    }
+
+    :global(.ant-menu-submenu-title) {
+      padding: 0 !important;
+      text-align: center;
+    }
+
+    :global(.ant-menu-title-content) {
+      display: none !important;
+    }
+
+    :global(.ant-menu-submenu-arrow) {
+      display: none !important;
+    }
+  }
+}
+
+/* Hovered Sidebar Styles */
+.hoveredSidebar {
+  width: 280px !important;
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+  padding: 10px 20px;
+  z-index: 1001; /* Ensure it's above other content */
+  background-color: #fff; /* Ensure background is visible */
+
+  .identitySection {
+    padding: 10px;
+    text-align: center;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .avatar {
+    margin: 0 auto 15px;
+    width: 80px !important;
+    height: 80px !important;
+  }
+
+  /* Show hidden elements on hover */
+  .siteTitle,
+  .tagline,
+  .skillTags,
+  .quickAccess,
+  .projectFilters,
+  .searchSection,
+  .progressCard,
+  .devCard,
+  .sidebarFooter {
+    display: block;
+    animation: fadeIn 0.3s ease;
+  }
+
+  /* Show divider text on hover */
+  :global(.ant-divider-inner-text) {
+    display: inline-block !important;
+    animation: fadeIn 0.3s ease;
+  }
+
+  /* Container widths */
+  .quickAccess,
+  .projectFilters,
+  .searchSection,
+  .treeNav {
+    width: 100%;
+  }
+
+  /* Animation for appearing elements */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Fix menu items in hover state */
+  :global(.ant-menu-inline-collapsed) {
+    width: 100% !important;
+
+    :global(.ant-menu-item),
+    :global(.ant-menu-submenu) {
+      padding: 0 16px !important;
+      text-align: left;
+    }
+
+    :global(.ant-menu-submenu-title) {
+      padding: 0 16px !important;
+      text-align: left;
+    }
+
+    :global(.ant-menu-title-content) {
+      display: inline-block !important;
+      opacity: 1;
+      padding-left: 10px;
+    }
+
+    :global(.ant-menu-submenu-arrow) {
+      display: inline-block !important;
+      opacity: 1;
+    }
+  }
+}
+
+/* Dark mode adjustments for hover */
+.darkMode {
+  .hoveredSidebar {
+    background-color: #1f1f1f;
+  }
+}
+
+/* Expanded on Hover Styles */
+.expandedOnHover {
+  width: 280px !important;
+  box-shadow: 4px 0 10px rgba(0, 0, 0, 0.15);
+  overflow-y: auto;
+
+  .identitySection {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+
+  .treeNav {
+    width: 100%;
+  }
+}
+
+/* Sidebar Toggle Button */
+.sidebarToggle {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 15px;
 }
 
 /* Core Identity Section */
 .identitySection {
   margin-bottom: 25px;
   text-align: center;
+  padding: 0 10px;
+  transition: all 0.3s ease;
 }
 
 .avatar {
@@ -53,6 +248,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.3s ease;
 }
 
 .avatarPlaceholder {
@@ -207,6 +403,8 @@
   display: flex;
   flex-direction: column;
   gap: 5px;
+  border-right: none !important;
+  width: 100%;
 }
 
 .treeItem {
@@ -603,75 +801,31 @@
 /* App Layout Styles */
 .appLayout {
   min-height: 100vh;
+  transition: padding-left 0.3s ease;
 
-  :global {
-    /* Fix Ant Design sidebar styles */
-    .ant-layout-sider {
-      background-color: #fff !important;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
-    }
+  @media (min-width: 769px) {
+    padding-left: 64px;
 
-    .ant-menu-inline {
-      border-right: none;
+    &:not(.collapsedLayout) {
+      padding-left: 280px;
     }
+  }
 
-    .ant-layout-sider-children {
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-      overflow-y: auto;
-      height: 100%;
-    }
-
-    .ant-card-small > .ant-card-body {
-      padding: 12px;
-    }
-
-    .ant-tag {
-      margin-right: 0;
-    }
-
-    .ant-tag-checkable {
-      &-checked {
-        background-color: #1da57a !important;
-        color: #fff !important;
-      }
-    }
-
-    .ant-divider-horizontal.ant-divider-with-text-left::before {
-      width: 5%;
-    }
-
-    .ant-divider-horizontal.ant-divider-with-text-left::after {
-      width: 95%;
-    }
-
-    .ant-progress-line {
-      margin-bottom: 0;
-    }
-
-    .ant-menu-submenu-title {
-      font-weight: 500;
-    }
-
-    /* Fix ribbon tag position */
-    .ant-ribbon-wrapper {
-      display: block;
-      margin-bottom: 12px;
-    }
-
-    .ant-ribbon {
-      top: 4px;
-      right: -8px;
-      height: 22px;
-      line-height: 22px;
-    }
+  @media (max-width: 768px) {
+    padding-left: 64px;
   }
 }
 
+/* Main Content Styles */
 .mainContent {
-  margin-left: 280px;
   min-height: 100vh;
+  position: relative;
+  z-index: 1;
+  transition: margin-left 0.3s ease;
+
+  @media (min-width: 769px) {
+    margin-left: 0;
+  }
 
   @media (max-width: 768px) {
     margin-left: 0;
@@ -894,4 +1048,64 @@
 
 .devCard {
   margin-bottom: 16px;
+}
+
+/* Fix Ant Design sidebar styles */
+:global(.ant-layout-sider) {
+  background-color: #fff !important;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+}
+
+:global(.ant-menu-inline) {
+  border-right: none;
+}
+
+:global(.ant-layout-sider-children) {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  overflow-y: auto;
+  height: 100%;
+}
+
+:global(.ant-card-small > .ant-card-body) {
+  padding: 12px;
+}
+
+:global(.ant-tag) {
+  margin-right: 0;
+}
+
+:global(.ant-tag-checkable-checked) {
+  background-color: #1da57a !important;
+  color: #fff !important;
+}
+
+:global(.ant-divider-horizontal.ant-divider-with-text-left::before) {
+  width: 5%;
+}
+
+:global(.ant-divider-horizontal.ant-divider-with-text-left::after) {
+  width: 95%;
+}
+
+:global(.ant-progress-line) {
+  margin-bottom: 0;
+}
+
+:global(.ant-menu-submenu-title) {
+  font-weight: 500;
+}
+
+/* Fix ribbon tag position */
+:global(.ant-ribbon-wrapper) {
+  display: block;
+  margin-bottom: 12px;
+}
+
+:global(.ant-ribbon) {
+  top: 4px;
+  right: -8px;
+  height: 22px;
+  line-height: 22px;
 }
