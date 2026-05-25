@@ -1,4 +1,9 @@
-import { HistoryOutlined, SearchOutlined, ToolOutlined } from '@ant-design/icons';
+import React from 'react';
+import {
+  HistoryOutlined,
+  SearchOutlined,
+  ToolOutlined,
+} from '@ant-design/icons';
 import { Layout, Menu, Typography } from 'antd';
 import { Link, useLocation } from 'umi';
 import type { PropsWithChildren } from 'react';
@@ -8,8 +13,16 @@ const { Title, Paragraph } = Typography;
 
 const menuItems = [
   { key: '/', label: <Link to="/">场景检索</Link>, icon: <SearchOutlined /> },
-  { key: '/results', label: <Link to="/results">结果判断</Link>, icon: <HistoryOutlined /> },
-  { key: '/manage', label: <Link to="/manage">手动维护</Link>, icon: <ToolOutlined /> },
+  {
+    key: '/results',
+    label: <Link to="/results">结果判断</Link>,
+    icon: <HistoryOutlined />,
+  },
+  {
+    key: '/manage',
+    label: <Link to="/manage">手动维护</Link>,
+    icon: <ToolOutlined />,
+  },
 ];
 
 function getSelectedKey(pathname: string) {
@@ -28,7 +41,9 @@ function getSelectedKey(pathname: string) {
   return '/';
 }
 
-export default function AppLayout(props: PropsWithChildren<Record<string, never>>) {
+export default function AppLayout(
+  props: PropsWithChildren<Record<string, never>>,
+) {
   const location = useLocation();
 
   return (

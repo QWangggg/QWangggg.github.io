@@ -3,6 +3,7 @@ import { useMemo, useState } from 'react';
 import { history } from 'umi';
 
 import { getAllScenarios, getAllSkills } from '@/features/skills/selectors';
+import { buildQueryString } from '@/utils/query';
 
 const { Title, Paragraph, Text } = Typography;
 const { Search } = Input;
@@ -13,17 +14,12 @@ export default function HomePage() {
   const stats = useMemo(() => getAllSkills(), []);
 
   const goToResults = (nextQuery?: string, scenarioId?: string) => {
-    const searchParams = new URLSearchParams();
-
-    if (nextQuery?.trim()) {
-      searchParams.set('q', nextQuery.trim());
-    }
-
-    if (scenarioId) {
-      searchParams.set('scenario', scenarioId);
-    }
-
-    history.push(`/results${searchParams.toString() ? `?${searchParams.toString()}` : ''}`);
+    history.push(
+      `/results${buildQueryString({
+        q: nextQuery,
+        scenario: scenarioId,
+      })}`,
+    );
   };
 
   return (
@@ -41,14 +37,18 @@ export default function HomePage() {
       >
         <Space direction="vertical" size={24} style={{ display: 'flex' }}>
           <div>
-            <Tag color="green" style={{ borderRadius: 999, paddingInline: 12, marginBottom: 12 }}>
+            <Tag
+              color="green"
+              style={{ borderRadius: 999, paddingInline: 12, marginBottom: 12 }}
+            >
               Search-first MVP
             </Tag>
             <Title level={1} style={{ marginTop: 0, marginBottom: 12 }}>
               先描述你现在卡在哪，再去找合适的 Skill
             </Title>
             <Paragraph style={{ fontSize: 16, maxWidth: 820, marginBottom: 0 }}>
-              你不需要先记住 Skill 名称。直接输入当前任务、问题或关键词，再用场景入口辅助缩小范围，
+              你不需要先记住 Skill
+              名称。直接输入当前任务、问题或关键词，再用场景入口辅助缩小范围，
               快速判断哪个 Skill 值得点开复用。
             </Paragraph>
           </div>
@@ -63,13 +63,20 @@ export default function HomePage() {
           />
 
           <Space wrap size={[8, 8]}>
-            {['qiankun 子应用白屏', '我要初始化项目', 'node-sass 构建错误', '我想沉淀一个 Skill'].map(
-              (keyword) => (
-                <Button key={keyword} shape="round" onClick={() => goToResults(keyword)}>
-                  {keyword}
-                </Button>
-              ),
-            )}
+            {[
+              'qiankun 子应用白屏',
+              '我要初始化项目',
+              'node-sass 构建错误',
+              '我想沉淀一个 Skill',
+            ].map((keyword) => (
+              <Button
+                key={keyword}
+                shape="round"
+                onClick={() => goToResults(keyword)}
+              >
+                {keyword}
+              </Button>
+            ))}
           </Space>
         </Space>
       </Card>
@@ -129,7 +136,11 @@ export default function HomePage() {
                   {scenarios.length}
                 </Title>
               </div>
-              <Button type="primary" size="large" onClick={() => history.push('/manage')}>
+              <Button
+                type="primary"
+                size="large"
+                onClick={() => history.push('/manage')}
+              >
                 去手动维护 Skill
               </Button>
             </Space>

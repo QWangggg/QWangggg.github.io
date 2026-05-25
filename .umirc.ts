@@ -17,6 +17,7 @@ export default defineConfig({
         { path: '/results', component: '@/pages/results/index' },
         { path: '/skills/:id', component: '@/pages/skills/[id]' },
         { path: '/manage', component: '@/pages/manage/index' },
+        { component: '@/pages/not-found' },
       ],
     },
   ],

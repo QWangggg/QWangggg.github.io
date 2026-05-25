@@ -1,87 +1,58 @@
-# React Blog with UmiJS
+# AI Coding Skill Workflow Platform
 
-A personal blog built with React and UmiJS, deployed to GitHub Pages.
+A personal AI Coding Skill workflow platform built with React, TypeScript, UmiJS, and Ant Design.
 
-## Features
+## Current MVP
 
-- Modern React components with hooks
-- UmiJS for routing and build optimization
-- Responsive design for mobile and desktop
-- Blog post listing and single post views
-- About page with skills and contact information
+- Search-first homepage for describing a current task, blocker, or question
+- Secondary scenario entry for narrowing from common AI Coding flows
+- Results page that helps judge which Skill is worth opening
+- Skill detail page with full usage information and lightweight history
+- Manual create/edit flow backed by browser-side persistence
 
 ## Getting Started
 
 ### Prerequisites
 
-- Node.js (version 12 or higher)
-- npm or yarn
+- Node.js
+- npm
 
 ### Installation
 
-1. Clone the repository
-```bash
-git clone https://github.com/QWangggg/QWangggg.github.io.git
-cd QWangggg.github.io
-```
-
-2. Install dependencies
 ```bash
 npm install
-# or
-yarn
 ```
 
-3. Start the development server
+### Start the Development Server
+
 ```bash
 npm start
-# or
-yarn start
 ```
 
-The application will be available at http://localhost:8000.
+The application will be available at `http://localhost:8000`.
 
-## Building for Production
-
-To build the application for production:
+### Build for Production
 
 ```bash
 npm run build
-# or
-yarn build
 ```
-
-## Deploying to GitHub Pages
-
-To deploy the application to GitHub Pages:
-
-```bash
-npm run deploy
-# or
-yarn deploy
-```
-
-This will build the application and deploy it to the gh-pages branch of your repository.
 
 ## Project Structure
 
-```
-├── .umirc.ts                # UmiJS configuration
-├── package.json             # Project dependencies and scripts
-├── public/                  # Static assets
-├── src/
-│   ├── pages/               # Pages components
-│   │   ├── index.tsx        # Home page
-│   │   ├── index.less       # Home page styles
-│   │   ├── about.tsx        # About page
-│   │   ├── about.less       # About page styles
-│   │   └── posts/           # Blog post pages
-│   │       ├── index.tsx    # Posts list page
-│   │       ├── index.less   # Posts list styles
-│   │       ├── post.tsx     # Single post page
-│   │       └── post.less    # Single post styles
+```text
+.
+|-- STRATEGY.md
+|-- docs/
+|   |-- brainstorms/
+|   `-- plans/
+|-- src/
+|   |-- features/skills/         # Skill data model, storage, search
+|   |-- layouts/                 # Shared app shell
+|   `-- pages/                   # Home, results, detail, manage
+`-- .umirc.ts                    # Umi routes and app config
 ```
 
-## License
+## Notes
 
-This project is licensed under the MIT License.
+- MVP intentionally excludes backend, permissions, auto-import, and auto-recommendation.
+- Skill data is persisted in browser `localStorage` for the current single-user workflow.
