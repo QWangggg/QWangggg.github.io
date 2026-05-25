@@ -14,10 +14,9 @@ export default defineConfig({
       component: '@/layouts/index',
       routes: [
         { path: '/', component: '@/pages/index' },
-        { path: '/posts', component: '@/pages/posts/index' },
-        { path: '/posts/:id', component: '@/pages/posts/post' },
-        { path: '/about', component: '@/pages/about' },
-        { path: '/writing', component: '@/pages/writing/index' },
+        { path: '/results', component: '@/pages/results/index' },
+        { path: '/skills/:id', component: '@/pages/skills/[id]' },
+        { path: '/manage', component: '@/pages/manage/index' },
       ],
     },
   ],
@@ -25,7 +24,7 @@ export default defineConfig({
   base: '/',
   publicPath: './',
   hash: true,
-  title: 'My React Blog',
+  title: 'AI Coding Skill Workflow Platform',
   theme: {
     'primary-color': '#1DA57A',
     'link-color': '#1DA57A',
