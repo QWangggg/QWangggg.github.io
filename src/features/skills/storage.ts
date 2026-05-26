@@ -2,9 +2,12 @@ import { DEFAULT_SKILLS } from './data';
 import type { Skill, SkillDraft, SkillHistoryEntry } from './types';
 
 const STORAGE_KEY = 'ai-coding-skill-workflow-platform.skills';
+const VALID_HISTORY_OUTCOMES = new Set(['verified', 'draft', 'updated']);
 
 function isBrowser() {
-  return typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+  return (
+    typeof window !== 'undefined' && typeof window.localStorage !== 'undefined'
+  );
 }
 
 function cloneSeedSkills() {
@@ -41,6 +44,99 @@ function createHistoryEntry(note: string): SkillHistoryEntry {
   };
 }
 
+function safeString(value: unknown, fallback = '') {
+  return typeof value === 'string' ? value.trim() : fallback;
+}
+
+function safeStringArray(value: unknown) {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  return value.map((item) => safeString(item)).filter(Boolean);
+}
+
+function normalizeHistoryEntry(
+  value: unknown,
+  index: number,
+): SkillHistoryEntry | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const item = value as Partial<SkillHistoryEntry>;
+  const title = safeString(item.title);
+
+  if (!title) {
+    return null;
+  }
+
+  const createdAt = safeString(item.createdAt) || new Date(0).toISOString();
+  const outcome = safeString(item.outcome);
+
+  return {
+    id: safeString(item.id) || `history-restored-${index}`,
+    title,
+    note: safeString(item.note) || undefined,
+    outcome: VALID_HISTORY_OUTCOMES.has(outcome)
+      ? (outcome as SkillHistoryEntry['outcome'])
+      : undefined,
+    createdAt,
+  };
+}
+
+function normalizeSkill(value: unknown, fallbackSkill: Skill): Skill | null {
+  if (!value || typeof value !== 'object') {
+    return null;
+  }
+
+  const item = value as Partial<Skill>;
+  const id = safeString(item.id);
+  const name = safeString(item.name);
+
+  if (!id || !name) {
+    return null;
+  }
+
+  const history = Array.isArray(item.history)
+    ? item.history
+        .map((historyItem, index) => normalizeHistoryEntry(historyItem, index))
+        .filter((historyItem): historyItem is SkillHistoryEntry =>
+          Boolean(historyItem),
+        )
+    : [];
+
+  return {
+    id,
+    slug: safeString(item.slug) || toSlug(name),
+    name,
+    oneLinePurpose: safeString(item.oneLinePurpose),
+    problemSolved: safeString(item.problemSolved),
+    whenToUse: safeString(item.whenToUse),
+    applicableScenarios: safeStringArray(item.applicableScenarios),
+    triggerKeywords: safeStringArray(item.triggerKeywords),
+    triggerConditions: safeStringArray(item.triggerConditions),
+    inputRequirements: safeStringArray(item.inputRequirements),
+    usageMethod: safeStringArray(item.usageMethod),
+    expectedOutput: safeStringArray(item.expectedOutput),
+    sourcePath: safeString(item.sourcePath),
+    relatedQueries: safeStringArray(item.relatedQueries),
+    history,
+    updatedAt: safeString(item.updatedAt) || fallbackSkill.updatedAt,
+  };
+}
+
+function normalizeSkills(rawSkills: unknown[]) {
+  const seedSkills = cloneSeedSkills();
+  const normalized = rawSkills
+    .map((skill, index) =>
+      normalizeSkill(skill, seedSkills[index] ?? seedSkills[0]),
+    )
+    .filter((skill): skill is Skill => Boolean(skill));
+
+  return normalized.length ? normalized : seedSkills;
+}
+
 export function loadSkills(): Skill[] {
   if (!isBrowser()) {
     return cloneSeedSkills();
@@ -61,7 +157,11 @@ export function loadSkills(): Skill[] {
       throw new Error('Skill storage payload is invalid.');
     }
 
-    return parsed;
+    const normalized = normalizeSkills(parsed);
+
+    saveSkills(normalized);
+
+    return normalized;
   } catch (error) {
     const seeded = cloneSeedSkills();
     saveSkills(seeded);
@@ -80,7 +180,9 @@ export function saveSkills(skills: Skill[]) {
 export function upsertSkill(draft: SkillDraft): Skill {
   const skills = loadSkills();
   const now = new Date().toISOString();
-  const existing = draft.id ? skills.find((skill) => skill.id === draft.id) : undefined;
+  const existing = draft.id
+    ? skills.find((skill) => skill.id === draft.id)
+    : undefined;
   const slug = existing?.slug ?? toSlug(draft.name);
   const history = existing ? [...existing.history] : [];
 
